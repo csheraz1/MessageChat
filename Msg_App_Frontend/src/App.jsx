@@ -1,18 +1,18 @@
 import { useState } from 'react'
-import './App.css'
-import MessageArea from './components/ChatArea'
 import ChatArea from './components/ChatArea'
+import './App.css'
+
 function App() {
   const [count, setCount] = useState(0)
 
   return (
     <>
-      <div>
-        <text>helo</text>
-        <MessageArea/>
-        {/* <ChatArea/> */}
-      </div>
-        
+      
+      <ChatArea/>
+      
+      <h1>Vite + React</h1>
+      
+     
     </>
   )
 }
