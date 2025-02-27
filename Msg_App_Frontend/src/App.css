@@ -40,3 +40,17 @@
 .read-the-docs {
   color: #888;
 }
+
+#Heading {
+  border: 1px solid blue;
+  padding: 10px;
+}
+
+#top {
+  border:1px solid white;
+  padding:20px;
+}
+
+#logout {
+  padding:15px;
+}

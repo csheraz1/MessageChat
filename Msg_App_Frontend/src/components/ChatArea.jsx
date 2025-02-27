@@ -1,7 +1,7 @@
 import { useState } from "react";
 import {over, StompJs} from "stompjs"
 import { Client } from '@stomp/stompjs';
-import SockJs from "sockjs-client/dist/sockjs"
+import SockJS from "sockjs-client/dist/sockjs"
 
 
 var stompClient = null;
@@ -20,70 +20,65 @@ function ChatArea(){
         connect();
     };
     const connect = () => {
+      let sock = new SockJS("http://localhost:8080/gs-guide-websocket");
 
-        // Setup 
-        // let sock = new SockJS("ws://localhost:8080/gs-guide-websocket");
-        const client = new Client({
-            brokerURL: 'ws://localhost:8080//gs-guide-websocket',
-            onConnect: () => {
-              client.subscribe('/chatroom/user', message =>
-                console.log(`Received: ${message.body}`)
-              );
-              client.publish({ destination: '/topic/test01', body: 'First Message' });
-            },
-          });
-        // const stompClient = new Client({
-        //     brokerURL: 'http://localhost:8080//gs-guide-websocket',
-        //     onConnect: () => {
-        //          // Update user connect to true
-        //             setUserData({ ...userData, connected: true });
-                
-        //             // subscribe to the public channel
-        //             stompClient.subscribe("/chatroom/user", onPublicMessageReceived);
-        //             // stompClient.subscribe(
-        //             // "/user/" + userData.username + "/private",
-        //             // onPrivateMessageReceived
-        //             // );
-                
-        //             // this joins a new user to some private user with status JOIN
-        //             userJoin();
-        //             console.log("u")
-        //     }
-        // });
-        console.log('reaching')
-        // Instantiate the stompClient
-        // stompClient = over(sock);
-        client.activate();
-        // stompClient.connect({}, onConnect, onError);
+      // we instantiate the stompClient
+      stompClient = over(sock);
+  
+      // finally we connect
+      stompClient.connect({}, onConnect, onError);
+ 
     };
 
     // Subscribe to the different channels available on the backend
-   
+    const onConnect = () => {
+      // update user connect to true
+      setUserData({ ...userData, connected: true });
+  
+      // subscribe the public channel
+      stompClient.subscribe("/chatroom/user", onPublicMessageReceived);
+      stompClient.subscribe(
+        "/user/" + userData.username + "/private",
+        onPrivateMessageReceived
+      );
+  
+      // this joins a new user to some privat user with status JOIN
+      userJoin();
+    };
+  
 
     //   // print default error message if connection fail
-    const onError = (error) => {
+   const onError = (error) => {
         console.log(error);
     };
 
     const onPublicMessageReceived = (payload) => {
         // converts the payload body to json
+        console.log(payload)
         var payloadData = JSON.parse(payload.body);
-    
-        switch (payloadData.status) {
+        console.log(payloadData.content)
+
+        switch (payloadData.content.substring(0, payloadData.content.length - 1)) {
             // if the user is joining for the first time
             // with status join create a private chat map
             // for the user
         case "JOIN":
+          console.log("hey er")
             if (!privateMessage.get(payloadData.senderName)) {
             privateMessage.set(payloadData.senderName, []);
             setPrivateMessage(new Map(privateMessage));
             }
             break;
         // if the user is sending a message (status message)
-        // update the the  the user public message if messageid
+        // update the user public message 
         case "MESSAGE":
             publicMessage.push(payloadData);
             setPublicMessage([...publicMessage]);
+            publicMessage.map((msg) => {
+                console.log(msg)
+            })
+            console.log("hey t r")
+            console.log(publicMessage)
             break;
         }
     };
@@ -104,17 +99,16 @@ function ChatArea(){
         setPrivateMessage(new Map(privateChats));
     };
 
-    const userJoin = () => {
+  const userJoin = () => {
         var chatMessage = {
         senderName: userData.username,
         status: "JOIN",
         };
-        // stompClient.send("/app/dest", {}, JSON.stringify(chatMessage));
-        stompClient.publish({
-            destination: "/app/dest",
-            body: JSON.stringify(chatMessage)
-        });
-        console.log("join")
+        stompClient.send("/app/dest", {}, JSON.stringify(chatMessage));
+        // stompClient.publish({
+        //     destination: "/app/dest",
+        //     body: JSON.stringify(chatMessage)
+        // });
     };
 
   const sendPublicMessage = () => {
@@ -172,18 +166,16 @@ function ChatArea(){
     const { value } = event.target;
     setUserData({ ...userData, username: value });
   };
-  const MessageArea = () =>{
-    return (
-        <div>MessageArea</div>
-    )
+  const logout = () =>{
+    setUserData({...userData, connected: false})
   }
 
-    return (<div className="container">
+    return (<div className="container" id="top">
 
         {userData.connected ?
         //if the user is connected display this
         (<div className="chat-box">
-                      <div className="member-list">
+           <div className="member-list">
             {/* loop throught the member list */}
             <ul>
               {/* onclick set the tab to the current tab */}
@@ -248,6 +240,9 @@ function ChatArea(){
                 >
                   send
                 </button>
+                <div id="logout">
+                <button onClick={logout}>Logout</button>
+                </div>
               </div>
             </div>
           ) : (
@@ -297,7 +292,9 @@ function ChatArea(){
         :
         //if the user is not connected display this
         // this will handle the user login/registration
-        (<div className="register">
+        (
+        <div className="register">
+          <div id="Heading">Registration for ChatRoom</div>
             <input
            id="user-name"
            placeholder="Enter your name"
@@ -309,8 +306,7 @@ function ChatArea(){
          <button type="button" onClick={registerUser}>
            connect
          </button>
-        </div>)}
-        <h1>hello</h1>
+        </div>)} 
       </div>);;
   }
 

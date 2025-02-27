@@ -7,14 +7,16 @@ import org.springframework.web.util.HtmlUtils;
 
 
 @Controller
-class cont{	
+class messageController{	
   
 	@MessageMapping("dest")
 	@SendTo("/chatroom/user")
-	public Greeting greeting(HelloMessage helloMessage)throws Exception{
+	public Greeting greeting(ChatMessage chatMessage)throws Exception{
 		Thread.sleep(3000);
-		System.out.println(HtmlUtils.htmlEscape(helloMessage.getName())+"");
-		return new Greeting(HtmlUtils.htmlEscape(helloMessage.getName()) + "!");
+ 		System.out.println(chatMessage.getMessage());
+		 System.out.println(chatMessage.getSenderName());
+		 System.out.println(chatMessage.getStatus());
+		return new Greeting(HtmlUtils.htmlEscape(chatMessage.getStatus()) + "!");
 
 	}
 }
