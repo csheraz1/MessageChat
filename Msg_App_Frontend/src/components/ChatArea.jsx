@@ -9,6 +9,7 @@ function ChatArea(){
     const [privateMessage, setPrivateMessage] = useState(new Map());
     const [publicMessage, setPublicMessage] = useState([]);
     const [chatArea, setChatArea] = useState("PUBLIC");
+    const [Registered, setRegistered] = ([false])
     const [userData, setUserData] = useState({
     username: "",
     recievername: "",
@@ -56,15 +57,18 @@ function ChatArea(){
         // converts the payload body to json
         console.log(payload)
         var payloadData = JSON.parse(payload.body);
-        console.log(payloadData.content)
+        console.log(payloadData.status)
 
-        switch (payloadData.content.substring(0, payloadData.content.length - 1)) {
+        // Remove ! at the end
+        const payloadStatus = payloadData.status + "";
+        console.log(payloadStatus)
+        switch (payloadStatus) {
             // if the user is joining for the first time
             // with status join create a private chat map
             // for the user
         case "JOIN":
-          console.log("hey er")
-            if (!privateMessage.get(payloadData.senderName)) {
+
+          if (!privateMessage.get(payloadData.senderName)) {
             privateMessage.set(payloadData.senderName, []);
             setPrivateMessage(new Map(privateMessage));
             }
@@ -72,12 +76,12 @@ function ChatArea(){
         // if the user is sending a message (status message)
         // update the user public message 
         case "MESSAGE":
+            console.log("now messaging")
             publicMessage.push(payloadData);
             setPublicMessage([...publicMessage]);
             publicMessage.map((msg) => {
                 console.log(msg)
             })
-            console.log("hey t r")
             console.log(publicMessage)
             break;
         }
@@ -202,8 +206,13 @@ function ChatArea(){
             </ul>
           </div>
           {chatArea === "PUBLIC" ? (
-            <div className="chat-content">
-              <ul className="chat-messages">
+            <div>
+              
+              
+              <div className="chat-content">
+              <div >Hello {userData.username}</div>
+                <ul className="chat-messages">
+
               
               {
                 publicMessage.map((chat, index)=>(
@@ -245,6 +254,7 @@ function ChatArea(){
                 </div>
               </div>
             </div>
+          </div>
           ) : (
             <div className="chat-content">
               <ul className="chat-messages">

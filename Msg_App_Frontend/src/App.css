@@ -44,13 +44,18 @@
 #Heading {
   border: 1px solid blue;
   padding: 10px;
+  color: black;
 }
 
 #top {
-  border:1px solid white;
+  border:1px solid black;
   padding:20px;
 }
 
 #logout {
   padding:15px;
+}
+
+.chat-content{
+  color:black
 }

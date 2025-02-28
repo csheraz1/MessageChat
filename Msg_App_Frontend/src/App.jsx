@@ -1,14 +1,19 @@
 import { useState } from 'react'
 import ChatArea from './components/ChatArea'
 import './App.css'
-import Example from './components/example'
+import './login.css'
+import Login from './components/login'
+import {Routes, Route} from 'react-router-dom'
 
 function App() {
 
   return (
     <>
-      {/* <Example/> */}
-      <ChatArea/>
+    <Routes>
+      <Route path='/login' element={<Login/>}/>
+      <Route path='/main' element={<ChatArea/>}/>
+    </Routes>
+      
       
     </>
   )
